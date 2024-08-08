@@ -71,7 +71,7 @@ $employeeNumbers = getUniqueEmployeeNumbers(); // Funkcja do pobrania unikalnych
     <title>Zarządzanie użytkownikami</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="css/manage_user.css">
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
 </head>
 <body>
@@ -536,7 +536,6 @@ $employeeNumbers = getUniqueEmployeeNumbers(); // Funkcja do pobrania unikalnych
 </table>
 
     </div>
-    <?php include 'templates/footer.php'; ?>
     <script src="js/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>

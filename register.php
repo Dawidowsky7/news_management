@@ -44,16 +44,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
-    <link rel="stylesheet" href="css/register_form.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 <!-- Formularz rejestracji -->
-<div class="container">
+<div class="container" style="background-image: url('img/background.jpg'); background-size: cover;">
     <div class="row justify-content-end">
         <div class="col-lg-5">
             <div class="card mt-5">
                 <div class="text-center">
-                    <img src="img/logo.png" alt="Logo" class="logo">
+                    <img src="img/logo.png" style="width: 100px;" alt="Logo" class="logo">
                 </div>
                 <div class="card-body">
                     <?php if ($error_message): ?>

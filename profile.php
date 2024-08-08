@@ -29,7 +29,7 @@ if (!$modalShown) {
     <title>Twój profil</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <?php include 'templates/header.php'; ?>
@@ -102,8 +102,6 @@ if (!$modalShown) {
             </div>
         </div>
     </div>
-
-    <?php include 'templates/footer.php'; ?>
 
     <script src="js/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
