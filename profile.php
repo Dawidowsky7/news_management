@@ -35,7 +35,7 @@ if (!$modalShown) {
     <?php include 'templates/header.php'; ?>
 
     <div class="container profile-container">
-        <h1 class="profile-title">Twój profil</h1>
+        <h1>Twój profil</h1>
 
         <div class="profile-content">
             <!-- Avatar Section -->
@@ -54,9 +54,9 @@ if (!$modalShown) {
             <div class="password-section">
                 <h2>Zmiana hasła</h2>
                 <?php if (isset($feedback['passwordMessage'])): ?>
-                    <div class="alert <?php echo $feedback['passwordMessageClass']; ?>" role="alert">
-                        <?php echo htmlspecialchars($feedback['passwordMessage']); ?>
-                    </div>
+                    <div class="alert <?php echo htmlspecialchars($feedback['passwordMessageClass']); ?>" role="alert">
+                <?php echo htmlspecialchars($feedback['passwordMessage']); ?>
+                </div>
                 <?php endif; ?>
                 <form method="POST" action="profile.php">
                     <div class="form-group">

@@ -11,8 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title = $_POST['title'];
     $content = $_POST['content'];
     $id = $_POST['id'] ?? null;
-    $current_user = $_SESSION['user'] ?? 'unknown'; // Assuming the username is stored in session
-
+    $current_user = $_SESSION['user'] ?? 'unknown';
+    
     $image = null;
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $uploadDir = 'uploads/';
@@ -31,11 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit;
 }
 
-// Handle deletion
-if (isset($_GET['delete'])) {
-    $current_user = $_SESSION['user'] ?? 'unknown'; // Assuming the username is stored in session
-    deleteNews($_GET['delete'], $current_user);
-    header('Location: manage_news.php');
+if (isset($_POST['delete'])) {
+    $id = intval($_POST['delete']);
+    deleteNews($id);
+
+    echo json_encode(['success' => true]);
     exit;
 }
 
@@ -52,7 +52,6 @@ $dateTo = isset($_GET['dateTo']) ? $_GET['dateTo'] : '';
 
 $sort = $_GET['sort'] ?? 'date';
 
-// Stwórz tablicę filtrów do przekazania do funkcji getNews
 $filter = [
     'title' => $titleFilter,
     'content' => $contentFilter,
@@ -61,12 +60,12 @@ $filter = [
 ];
 
 $newsList = getNews($sort, $filter);
-
+$titles = getNewsTitles();
 
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <title>Zarządzanie aktualnościami</title>
@@ -82,27 +81,38 @@ $newsList = getNews($sort, $filter);
         <h1 class="mb-4">Zarządzanie aktualnościami</h1>
         <hr>
 
-<!-- Filtry -->
-<div class="mb-4">
+        <!-- Filtry -->
+        <div class="mb-4">
             <form id="filtersForm" method="GET" action="manage_news.php">
+                <h7><b>Filtruj:</b></h7>
+                <p></p>
                 <div class="form-row">
                     <!-- Filtr tytułu -->
                     <div class="col-md-12 mb-3">
-                        <label for="titleFilter">Filtruj po tytule</label>
-                        <select id="titleFilter" name="title[]" multiple class="form-control select2">
-                            <!-- Opcje będą dodane dynamicznie -->
-                        </select>
+                        <label for="titleFilter">Tytuł</label>
+                        <div class="form-row">
+                            <div class="col-md-6 mb-2">
+                                <select id="titleFilter" name="title[]" multiple class="form-control select2">
+                                    <?php foreach ($titles as $title): ?>
+                                        <option value="<?php echo htmlspecialchars($title, ENT_QUOTES); ?>"><?php echo htmlspecialchars($title, ENT_QUOTES); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-
                     <!-- Filtr treści -->
                     <div class="col-md-12 mb-3">
-                        <label for="contentFilter">Filtruj po treści</label>
-                        <input type="text" id="contentFilter" name="content" class="form-control" value="<?php echo htmlspecialchars($contentFilter); ?>">
+                        <label for="contentFilter">Treść</label>
+                        <div class="form-row">
+                            <div class="col-md-6 mb-2">
+                                <input type="text" id="contentFilter" name="content" class="form-control" value="<?php echo htmlspecialchars($contentFilter); ?>">
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Filtr daty od - do -->
                     <div class="col-md-12 mb-3">
-                        <label>Filtruj po dacie</label>
+                        <label>Data dodania aktualności</label>
                         <div class="form-row">
                             <div class="col-md-6 mb-2">
                                 <input type="date" id="dateFrom" name="dateFrom" class="form-control" value="<?php echo htmlspecialchars($dateFrom); ?>">
@@ -123,7 +133,7 @@ $newsList = getNews($sort, $filter);
         </button>
         <div class="modal fade" id="newsModal" tabindex="-1" role="dialog" aria-labelledby="newsModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
-                <div class="modal-content">
+                <div class="modal-content" style="left: 45px;">
                     <div class="modal-header">
                         <h5 class="modal-title" id="newsModalLabel">Dodaj aktualność</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -147,7 +157,7 @@ $newsList = getNews($sort, $filter);
                                 <input type="file" class="form-control-file" id="image" name="image" onchange="previewImage()">
                                 <img id="previewImage" class="img-thumbnail mt-2" style="display: none;">
                             </div>
-                            <button type="submit" class="btn btn-primary" id="submitButton">Dodaj</button>
+                            <button type="submit" class="btn btn-primary" id="submitButton" style="float:left">Dodaj aktualność</button>
                         </form>
                     </div>
                 </div>
@@ -155,10 +165,11 @@ $newsList = getNews($sort, $filter);
         </div>
 
         <h2 class="mt-4">Lista aktualności</h2>
+        <hr>
         <div class="row">
             <?php foreach ($newsList as $newsItem): ?>
                 <div class="col-md-4 mb-4">
-                    <div class="card rounded-lg shadow-sm">
+                    <div class="card rounded-lg">
                         <?php if ($newsItem['photo']): ?>
                             <img src="<?php echo htmlspecialchars($newsItem['photo'], ENT_QUOTES); ?>" alt="News Image" class="card-img-top img-fluid rounded-top" style="max-height: 200px; object-fit: cover;">
                         <?php endif; ?>
@@ -187,7 +198,7 @@ $newsList = getNews($sort, $filter);
 <!-- Modal potwierdzenia usunięcia aktualności -->
 <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
+            <div class="modal-content" style="left: 45px;">
                 <div class="modal-header">
                     <h5 class="modal-title" id="deleteConfirmationModalLabel">Potwierdzenie usunięcia</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -208,7 +219,7 @@ $newsList = getNews($sort, $filter);
 <!-- Modal po usunięciu aktualności -->
 <div class="modal fade" id="deleteSuccessModal" tabindex="-1" role="dialog" aria-labelledby="deleteSuccessModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
+            <div class="modal-content" style="left: 45px;">
                 <div class="modal-body text-center">
                     <div class="animated-checkmark">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
@@ -225,7 +236,7 @@ $newsList = getNews($sort, $filter);
     <!-- Modal pełnego podglądu -->
     <div class="modal fade" id="fullViewModal" tabindex="-1" role="dialog" aria-labelledby="fullViewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
+            <div class="modal-content" style="right: 150px;">
                 <div class="modal-header">
                     <h5 class="modal-title" id="fullViewModalLabel">Pełny widok aktualności</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -243,139 +254,7 @@ $newsList = getNews($sort, $filter);
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-
-    <script>
-        let newsIdToDelete = null;
-
-        $(document).ready(function() {
-    // Inicjalizacja Select2
-    $('#titleFilter').select2({
-        placeholder: 'Wybierz tytuł',
-        allowClear: true
-    });
-
-    populateFilters();
-});
-
-function populateFilters() {
-    $.get('get_filter_options.php', function(data) {
-        console.log('Received data:', data); // Debugging line
-
-        if (typeof data === 'string') {
-            try {
-                data = JSON.parse(data);
-            } catch (error) {
-                console.error('Error parsing JSON:', error);
-                return;
-            }
-        }
-        
-        console.log('Parsed options:', data); // Debugging line
-
-        $('#titleFilter').empty();
-        if (data.titles) {
-            data.titles.forEach(function(title) {
-                $('#titleFilter').append(`<option value="${title}">${title}</option>`);
-            });
-            $('#titleFilter').trigger('change'); // Use 'change' event to update Select2
-        } else {
-            console.error('No titles found in response');
-        }
-    }).fail(function(jqXHR, textStatus, errorThrown) {
-        console.error('Error fetching filter options:', textStatus, errorThrown);
-    });
-}
-
-
-
-        function previewImage() {
-            var file = document.getElementById('image').files[0];
-            var reader = new FileReader();
-            var preview = document.getElementById('previewImage');
-
-            reader.onloadend = function () {
-                preview.src = reader.result;
-                preview.style.display = 'block';
-            };
-
-            if (file) {
-                reader.readAsDataURL(file);
-            } else {
-                preview.src = "";
-                preview.style.display = 'none';
-            }
-        }
-
-        function resetModal() {
-            $('#newsModalLabel').text('Dodaj aktualność');
-            $('#submitButton').text('Dodaj');
-            $('#title').val('');
-            $('#content').val('');
-            $('#image').val('');
-            $('#newsId').val('');
-            $('#currentImage').val('');
-            $('#previewImage').hide();
-        }
-
-        function editNews(id) {
-            $.get('get_news.php', { id: id }, function(data) {
-                var news = JSON.parse(data);
-                $('#newsModalLabel').text('Edytuj aktualność');
-                $('#submitButton').text('Aktualizuj');
-                $('#title').val(news.title);
-                $('#content').val(news.content);
-                $('#newsId').val(news.id);
-                $('#currentImage').val(news.photo);
-                if (news.photo) {
-                    $('#previewImage').attr('src', news.photo).show();
-                } else {
-                    $('#previewImage').hide();
-                }
-                $('#newsModal').modal('show');
-            }).fail(function() {
-                alert('Wystąpił błąd podczas ładowania danych aktualności.');
-            });
-        }
-
-        function confirmDelete(id) {
-            newsIdToDelete = id;
-            $('#deleteConfirmationModal').modal('show');
-        }
-
-        $('#confirmDeleteButton').click(function() {
-            $.get('manage_news.php', { delete: newsIdToDelete }, function() {
-                $('#deleteConfirmationModal').modal('hide');
-                $('#deleteSuccessModal').modal('show');
-                setTimeout(function() {
-                    location.reload();
-                }, 3000);
-            }).fail(function() {
-                alert('Wystąpił błąd podczas usuwania aktualności.');
-            });
-        });
-
-        $('#newsModal').on('hidden.bs.modal', function () {
-            resetModal();
-        });
-
-        function showFullView(id) {
-            $.get('get_news.php', { id: id }, function(data) {
-                var news = JSON.parse(data);
-                var modalContent = `
-                    <h3>${news.title}</h3>
-                    <p><small>Dodano: ${news.created_at}</small></p>
-                    <p>${news.content}</p>
-                `;
-                if (news.photo) {
-                    modalContent += `<img src="${news.photo}" class="img-fluid mt-3" alt="News Image">`;
-                }
-                $('#fullViewContent').html(modalContent);
-                $('#fullViewModal').modal('show');
-            }).fail(function() {
-                alert('Wystąpił błąd podczas ładowania szczegółów aktualności.');
-            });
-        }
-    </script>
+    <script src="js/script.js"></script>
 </body>
 </html>
 

@@ -28,7 +28,7 @@ $news = getNews();
         <div class="row">
             <?php foreach ($news as $newsItem): ?>
                 <div class="col-md-4 mb-4">
-                    <div class="card rounded-lg shadow-sm">
+                    <div class="card rounded-lg">
                         <?php if (!empty($newsItem['photo'])): ?>
                             <img src="<?php echo htmlspecialchars($newsItem['photo'], ENT_QUOTES); ?>" alt="News Image" class="card-img-top img-fluid rounded-top" style="max-height: 200px; object-fit: cover;">
                         <?php endif; ?>
@@ -48,8 +48,8 @@ $news = getNews();
         </div>
     </div>
 
-        <!-- Modal -->
-        <div class="modal fade" id="fullViewModal" tabindex="-1" role="dialog" aria-labelledby="fullViewModalLabel" aria-hidden="true">
+    <!-- Modal -->
+    <div class="modal fade" id="fullViewModal" tabindex="-1" role="dialog" aria-labelledby="fullViewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -68,27 +68,7 @@ $news = getNews();
         </div>
     </div>
 
-    <script src="js/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script src="js/main.js"></script>
-    <script>
-        function showFullView(id) {
-            $.get('get_news.php', { id: id }, function(data) {
-                var news = JSON.parse(data);
-                var modalContent = `
-                    <h3>${news.title}</h3>
-                    <p><small>Dodano: ${news.created_at}</small></p>
-                    <p>${news.content}</p>
-                `;
-                if (news.photo) {
-                    modalContent += `<img src="${news.photo}" class="img-fluid mt-3" alt="News Image">`;
-                }
-                $('#fullViewContent').html(modalContent);
-                $('#fullViewModal').modal('show');
-            }).fail(function() {
-                alert('Wystąpił błąd podczas ładowania szczegółów aktualności.');
-            });
-        }
-    </script>
+    <script src="js/script.js"></script>
 </body>
 </html>

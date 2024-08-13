@@ -77,10 +77,10 @@ $employeeNumbers = getUniqueEmployeeNumbers(); // Funkcja do pobrania unikalnych
 <body>
     <?php include 'templates/header.php'; ?>
 
-    <div class="container">
+    <div class="container" style="max-width: 1385px;">
         <h1>Zarządzanie użytkownikami</h1>
         <hr>
-        <h7><b>Filtruj po:</b></h7>
+        <h7><b>Filtruj:</b></h7>
         <p></p>
         <form method="GET" action="manage_users.php" class="form-inline mb-4">
     <div class="row">

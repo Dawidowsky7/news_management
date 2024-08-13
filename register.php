@@ -12,6 +12,7 @@ $response = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Pobranie danych z formularza
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
     $username = $_POST['username'];
@@ -19,22 +20,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $employee_number = $_POST['employee_number'];
     $department = $_POST['department'];
     $unit = $_POST['unit'];
-    $role = 'Employee';
+    $role_id = 2; // Domyślna rola Employee
     $registration_date = date('Y-m-d H:i:s');
+    
 
+    // Sprawdzenie, czy numer pracownika lub nazwa użytkownika jest zajęta
     if (isEmployeeNumberTaken($employee_number)) {
         $response['error_message'] = 'Numer pracownika jest już zajęty.';
     } elseif (isUsernameTaken($username)) {
         $response['error_message'] = 'Nazwa użytkownika jest już zajęta.';
     } else {
-        addUser($first_name, $last_name, $username, $password, $employee_number, $department, $unit, $role, $registration_date);
+        // Dodanie użytkownika
+        addUser($first_name, $last_name, $username, $password, $employee_number, $department, $unit, $role_id, $registration_date);
         $response['success'] = true;
     }
     
-    echo json_encode($response);
-    exit;
+    $response = json_encode($response);
+    header('Content-Type: application/json');
+    echo $response;
+    die(); // Dodaj to, aby zatrzymać dalsze przetwarzanie
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pl">
@@ -112,22 +119,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 <!-- Modal potwierdzenia rejestracji -->
-<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<div id="successModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="successModalLabel">Rejestracja zakończona</h5>
+                <h5 class="modal-title">Rejestracja zakończona sukcesem</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="modal-body">
-                <div class="tick-icon">
-                    <i class="fas fa-check-circle"></i>
+            <div class="modal-body text-center">
+                <div class="animated-checkmark">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                        <path class="checkmark-check" d="M14 27l7 7 16-16"/>
+                    </svg>
                 </div>
-                <p>Pomyślnie zarejestrowano!</p>
-                <div class="countdown">Przekierowanie za <span id="countdown">4</span> s na stronę logowania.</div>
+                <p>Twoja rejestracja przebiegła pomyślnie!</p>
+                <p>Za chwilę zostaniesz przekierowany na stronę logowania...</p>
+                <p>Za <span id="countdown">5</span></p>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- Modal z informacją o złożoności hasła -->
 <div class="modal fade" id="passwordStrengthModal" tabindex="-1" role="dialog" aria-labelledby="passwordStrengthModalLabel" aria-hidden="true">

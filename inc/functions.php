@@ -25,13 +25,20 @@ function deleteNews($id) {
     $news = $stmt->fetch();
 
     if ($news && $news['photo'] && file_exists($news['photo'])) {
-        unlink($news['photo']);
+        if (!unlink($news['photo'])) {
+            error_log("Nie udało się usunąć pliku: " . $news['photo']);
+        }
     }
 
     $sql = "DELETE FROM news WHERE id = :id";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute(['id' => $id]);
+    $result = $stmt->execute(['id' => $id]);
+
+    if (!$result) {
+        error_log("Błąd podczas usuwania aktualności o ID: " . $id);
+    }
 }
+
 
 function getNews($sort = 'date', $filter = []) {
     global $pdo;
@@ -90,6 +97,12 @@ function getNewsById($id) {
     $stmt = $pdo->prepare("SELECT * FROM news WHERE id = ?");
     $stmt->execute([$id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function getNewsTitles() {
+    global $pdo;
+    $stmt = $pdo->query("SELECT DISTINCT title FROM news");
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
 }
 
 function addUser($first_name, $last_name, $username, $password, $employee_number, $department, $unit, $role_id, $registration_date) {
@@ -330,13 +343,17 @@ function updatePassword($id, $password) {
 
 // Mój Profil
 function handleProfileUpdate($userId) {
+    $feedback = [];  // Dodaj tablicę do przechowywania komunikatów
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST['update_avatar'])) {
             handleAvatarUpdate($userId);
         } elseif (isset($_POST['change_password'])) {
-            handlePasswordChange($userId);
+            $feedback = handlePasswordChange($userId);  // Zapisz zwrócone wartości w feedback
         }
     }
+
+    return $feedback;  // Zwróć feedback, aby można było go użyć w widoku
 }
 
 function handleAvatarUpdate($userId) {
@@ -376,7 +393,7 @@ function handlePasswordChange($userId) {
                 $passwordMessageClass = "alert-danger";
             }
         } else {
-            $passwordMessage = "Nowe hasło i potwierdzenie hasła nie pasują do siebie!";
+            $passwordMessage = "Nowe hasło i potwierdzone nowe hasło nie pasują do siebie!";
             $passwordMessageClass = "alert-danger";
         }
     } else {

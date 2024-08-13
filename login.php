@@ -55,8 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Modal o ciasteczkach -->
     <div class="modal fade" id="cookieModal" tabindex="-1" role="dialog" aria-labelledby="cookieModalLabel" aria-hidden="true">
-        <div class="modal-dialog-cookies modal-dialog-centered" role="document">
-            <div class="modal-content-cookies">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="cookieModalLabel">Informacja o plikach cookies</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -78,6 +78,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script src="js/script.js"></script>
+    <script>
+    $(document).ready(function() {
+        console.log('Document is ready');
+
+        // Sprawdź, czy cookies są już zaakceptowane
+        if (document.cookie.indexOf('cookies-accepted=true') === -1) {
+            console.log('Showing cookie modal');
+            $('#cookieModal').modal('show');
+        }
+
+        $('#acceptCookies').click(function() {
+            console.log('Accepting cookies');
+            // Ustaw cookie na 30 dni
+            document.cookie = "cookies-accepted=true; max-age=" + (30*24*60*60) + "; path=/";
+            $('#cookieModal').modal('hide');
+        });
+    });
+    </script>
 </body>
 </html>

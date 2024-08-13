@@ -243,7 +243,7 @@ header {
     color: #333;
 }
 
-/* Card styles */
+/* Styl dla kart */
 .card {
     margin: auto;
     margin-top: 5%;
@@ -251,7 +251,15 @@ header {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
     max-width: 400px;
     background-color: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Dodaj przejście dla animacji */
 }
+
+/* Efekt powiększania karty po najechaniu myszką */
+.card:hover {
+    transform: scale(1.05); /* Powiększa kartę o 5% */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 12px 30px rgba(0, 0, 0, 0.2); /* Zwiększa cień */
+}
+
 
 .card-header {
     background-color: #fff;
@@ -296,6 +304,11 @@ header {
 /* Modal styles */
 .modal-content {
     border-radius: 10px;
+    margin-left: 10px;
+    margin-right: 30px;
+    top: -30px;
+    overflow-y: auto;
+    max-height: 100vh; /* Maksymalna wysokość modala */
 }
 
 .modal-body {
@@ -307,33 +320,25 @@ header {
     height: 5px;
     width: 100%;
     background-color: #e0e0e0;
-    border-radius: 2px;
-    margin-top: 5px;
-    position: relative;
+    border-radius: 3px;
+    transition: background 0.3s ease;
 }
 
-#password-strength span {
-    display: block;
-    height: 100%;
-    width: 0;
-    border-radius: 2px;
-    transition: width 0.3s;
+
+#password-strength.strength-weak {
+    background-color: #ff4d4d; /* Czerwony */
 }
 
-.weak span {
-    background-color: #ff4d4d;
+#password-strength.strength-medium {
+    background-color: #ffa500; /* Pomarańczowy */
 }
 
-.medium span {
-    background-color: #ffcc00;
+#password-strength.strength-strong {
+    background-color: #ffff00; /* Żółty */
 }
 
-.strong span {
-    background-color: #33cc33;
-}
-
-.very-strong span {
-    background-color: #009933;
+#password-strength.strength-very-strong {
+    background-color: #4caf50; /* Zielony */
 }
 
 #newsModal .modal-body img, #fullViewContent img {
@@ -345,7 +350,7 @@ header {
 
 .modal-dialog {
     position: fixed;
-    top: 20%;
+    top: 5%;
     left: 30%;
     transform: translate(-50%, -50%);
 }
@@ -373,7 +378,7 @@ header {
     outline: 0;
 }
 
-/* Animation styles */
+/* Animacja checkmarka */
 .animated-checkmark {
     width: 56px;
     height: 56px;
@@ -383,17 +388,25 @@ header {
     stroke: #4CAF50;
     stroke-miterlimit: 10;
     margin: 15px auto;
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2);
     position: relative;
     animation: checkmark-animation 0.5s ease-in-out;
 }
 
-.animated-checkmark .checkmark {
-    display: none;
+.animated-checkmark .checkmark-circle {
+    fill: none;
+    stroke: #4CAF50;
+    stroke-width: 2;
 }
 
-.animated-checkmark .checkmark__circle {
+.animated-checkmark .checkmark-check {
     fill: none;
+    stroke: #4CAF50;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 60; /* Długość linii */
+    stroke-dashoffset: 60; /* Startowa pozycja linii */
+    animation: checkmark-draw 0.5s ease-in-out forwards;
 }
 
 @keyframes checkmark-animation {
@@ -411,9 +424,52 @@ header {
     }
 }
 
+@keyframes checkmark-draw {
+    0% {
+        stroke-dashoffset: 60;
+    }
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+
 /* Custom styles */
 .custom-style {
     color: #007bff;
     font-weight: bold;
     padding: 5px;
+}
+
+label {
+    display: inline-block;
+    margin-bottom: .5rem;
+    float: left;
+}
+
+.header-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-filters h1 {
+    margin-bottom: 0;
+}
+
+.filters-form {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.filters-form form {
+    margin-bottom: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filters-form .form-group {
+    margin-bottom: 0;
 }
